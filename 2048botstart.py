@@ -9,7 +9,7 @@ dp = Dispatcher(bot)
 @dp.message_handler(commands=["start"])
 async def start(message: types.Message):
     mark = types.ReplyKeyboardMarkup()
-    mark.add(types.KeyboardButton("Открыть", web_app=WebAppInfo(url="URL")))
+    mark.add(types.KeyboardButton("Открыть", web_app=WebAppInfo(url="URL"))) #for my 2048 use https://gamesfornika.online/
     await message.answer("2048",reply_markup=mark)
 
 @dp.message_handler() 
