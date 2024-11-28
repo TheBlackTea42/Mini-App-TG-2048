@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2048 Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            overflow: hidden;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #faf8ef;
+        }
+        #game-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-gap: 10px;
+            width: 35vh;
+            height: 35vh;
+            background-color: #bbada0;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+            margin-top: 20vh;
+        }
+
+        .tile {
+            width: 100%; /* Позволяем плиткам занимать всю доступную ширину */
+            height: 100%;
+            min-height: 100%; /* Позволяем плиткам занимать всю доступную высоту */
+            padding-top: -6vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4vh;
+            font-weight: bold;
+            color: #776e65;
+            border-radius: 10px;
+            background-color: #cdc1b4;
+            box-sizing: border-box; /* Чтобы учитывать padding при расчёте размеров */
+            text-align: center; /* Центрируем текст в ячейке */
+        }
+        .zero{
+            color: #cdc1b4;
+            pointer-events: none;
+            user-select: none;
+        }
+        .tile[data-value="2"] { background-color: #eee4da;             color: #776e65;}
+        .tile[data-value="4"] { background-color: #ede0c8;             color: #776e65;        }
+        .tile[data-value="8"] { background-color: #f2b179; color: #f9f6f2; }
+        .tile[data-value="16"] { background-color: #f59563; color: #f9f6f2; }
+        .tile[data-value="32"] { background-color: #f67c5f; color: #f9f6f2; }
+        .tile[data-value="64"] { background-color: #f65e3b; color: #f9f6f2; }
+        .tile[data-value="128"] { background-color: #edcf72; color: #f9f6f2; }
+        .tile[data-value="256"] { background-color: #edcc61; color: #f9f6f2; }
+        .tile[data-value="512"] { background-color: #edc850; color: #f9f6f2; }
+        .tile[data-value="1024"] { background-color: #edc53f; color: #f9f6f2; }
+        .tile[data-value="2048"] { background-color: #edc22e; color: #f9f6f2; }
+        .lefts{
+            animation: left 0.25s forwards  1;
+        }
+        .rights{
+            animation: right 0.25s forwards  1;
+        }
+        .tops{
+            animation: top 0.25s forwards  1;
+        }
+        .downs{
+            animation: down 0.25s forwards  1;
+        }
+        @keyframes left {
+            0%{
+                filter: blur(0);
+                transform: translateX(0vw);
+            }
+            50%{
+                filter: blur(0.15vw);
+                transform: translateX(-4vw);
+            }
+            100%{
+                filter: blur(0);
+                transform: translateX(0vw);
+            }
+        }
+        @keyframes right {
+            0%{
+                filter: blur(0);
+                transform: translateX(0vw);
+            }
+            50%{
+                filter: blur(0.15vw);
+                transform: translateX(4vw);
+            }
+            100%{
+                filter: blur(0);
+                transform: translateX(0vw);
+            }
+        }
+        @keyframes top {
+            0%{
+                filter: blur(0);
+                transform: translateY(0vw);
+            }
+            50%{
+                filter: blur(0.15vw);
+                transform: translateY(-4vw);
+            }
+            100%{
+                filter: blur(0);
+                transform: translateY(0vw);
+            }
+        }
+        @keyframes down {
+            0%{
+                filter: blur(0);
+                transform: translateY(0vw);
+            }
+            50%{
+                filter: blur(0.15vw);
+                transform: translateY(4vw);
+            }
+            100%{
+                filter: blur(0);
+                transform: translateY(0vw);
+            }
+        }
+        .scoresbest{
+            background-color: #bbada4;
+            height: 7vh;
+            width: 11vh;
+            color:#ede0c8;
+            margin-left: 26vh;
+            top: calc(var(--tg-content-safe-area-inset-top)*1.7);
+            border-radius: 1vh;
+            position: absolute;
+            font-size: 2vh;
+            font-weight: bold;
+        }
+        .logo{
+            background-color: #edc22e;
+            height: 12vh;
+            width:12vh;
+            color:#ffffff;
+            margin-right: 25vh;
+            top: calc(var(--tg-content-safe-area-inset-top)*1.7);
+            border-radius: 1vh;
+            position: absolute;
+            justify-content: center;
+            text-align: center;
+            font-size: 7vh;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 4vh;
+            font-weight: bold;
+
+            box-sizing: border-box; /* Чтобы учитывать padding при расчёте размеров */
+            text-align: center;
+        }
+        .scoresnow{
+            background-color: #bbada4;
+            height: 7vh;
+            width: 11vh;
+            color:#ede0c8;
+            margin-left: 2vh;
+            top: calc(var(--tg-content-safe-area-inset-top)*1.7);
+            border-radius: 1vh;
+            position: absolute;
+            font-size: 2vh;
+            font-weight: bold;
+        }
+        .scoreuptext{
+            text-align: center;
+            font-size: 2vh;
+            margin-top: 0.4vw;
+        }
+        .score{
+            font-size: 3vh;
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="scoresbest"><div class="scoreuptext">Best</div><div class="score" id="bestscores">0 </div></div>
+    <div class="scoresnow" ><div class="scoreuptext">Score</div><div class="score" id="scores">0</div></div>
+    <div class="logo">2048</div>
+    <div id="game-container"></div>
+    <script src="script.js"></script>
+    <script>
+        let tg = window.Telegram.WebApp; //получаем объект webapp телеграма 
+        tg.requestFullscreen()
+        tg.disableVerticalSwipes()	
+</script>     
+</body>
+</html>
